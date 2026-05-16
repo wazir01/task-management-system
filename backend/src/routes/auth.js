@@ -9,7 +9,13 @@ const { validate } = require('../utils/validation');
 const router = express.Router();
 
 function signToken(userId) {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    const err = new Error('JWT_SECRET is not configured on the server');
+    err.status = 503;
+    throw err;
+  }
+  return jwt.sign({ userId }, secret, { expiresIn: '7d' });
 }
 
 router.post(
@@ -39,8 +45,12 @@ router.post(
       select: { id: true, email: true, name: true, createdAt: true },
     });
 
-    const token = signToken(user.id);
-    res.status(201).json({ user, token });
+    try {
+      const token = signToken(user.id);
+      res.status(201).json({ user, token });
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Server configuration error' });
+    }
   }
 );
 
@@ -59,11 +69,15 @@ router.post(
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const token = signToken(user.id);
-    res.json({
-      user: { id: user.id, email: user.email, name: user.name, createdAt: user.createdAt },
-      token,
-    });
+    try {
+      const token = signToken(user.id);
+      res.json({
+        user: { id: user.id, email: user.email, name: user.name, createdAt: user.createdAt },
+        token,
+      });
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Server configuration error' });
+    }
   }
 );
 

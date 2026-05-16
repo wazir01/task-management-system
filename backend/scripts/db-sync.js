@@ -1,4 +1,4 @@
-require('./set-db-provider');
+require('./ensure-env');
 const { execSync } = require('child_process');
 
 const url = process.env.DATABASE_URL || '';

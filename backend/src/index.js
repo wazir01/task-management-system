@@ -18,8 +18,20 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get('/api/health', async (_req, res) => {
+  let db = false;
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    db = true;
+  } catch {
+    db = false;
+  }
+  res.json({
+    status: db ? 'ok' : 'degraded',
+    db,
+    timestamp: new Date().toISOString(),
+    version: process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) || 'local',
+  });
 });
 
 app.use('/api/auth', authRoutes);
@@ -38,11 +50,31 @@ app.get(/^(?!\/api).*/, (_req, res) => {
 });
 
 async function start() {
+  const onRailway = Boolean(
+    process.env.RAILWAY_ENVIRONMENT ||
+      process.env.RAILWAY_PROJECT_ID ||
+      process.env.RAILWAY_SERVICE_ID
+  );
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  if ((onRailway || isProduction) && !process.env.JWT_SECRET) {
+    console.error('FATAL: Set JWT_SECRET on the web service (Railway → Variables).');
+    process.exit(1);
+  }
+
+  if ((onRailway || isProduction) && !process.env.DATABASE_URL) {
+    console.error('FATAL: Link DATABASE_URL from PostgreSQL to the web service.');
+    process.exit(1);
+  }
+
   try {
     await prisma.$connect();
     console.log('Database connected');
   } catch (err) {
     console.error('Database connection failed:', err.message);
+    if (onRailway || isProduction) {
+      process.exit(1);
+    }
   }
 
   app.listen(PORT, () => {
