@@ -44,6 +44,14 @@ export default function Dashboard() {
     });
   }, [data, taskSearch, statusFilter]);
 
+  const filteredTeamTasks = useMemo(() => {
+    if (!data?.teamTasks) return [];
+    return data.teamTasks.filter((task) => {
+      if (statusFilter && task.status !== statusFilter) return false;
+      return matchesTaskSearch(task, taskSearch.trim());
+    });
+  }, [data, taskSearch, statusFilter]);
+
   const filteredOverdue = useMemo(() => {
     if (!data?.overdueTasks) return [];
     return data.overdueTasks.filter((task) => matchesTaskSearch(task, taskSearch.trim()));
@@ -168,6 +176,41 @@ export default function Dashboard() {
                   <h4>{task.title}</h4>
                   <p className="task-meta">
                     {task.project.name}
+                    {task.dueDate && ` · Due ${formatDate(task.dueDate)}`}
+                  </p>
+                </div>
+                <StatusBadge status={task.status} />
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="card" style={{ marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.1rem', margin: '0 0 1rem' }}>All active project tasks</h2>
+        {filteredTeamTasks.length === 0 ? (
+          <p className="empty-state">
+            {taskSearch || statusFilter
+              ? 'No tasks match your filters'
+              : summary.projectCount === 0
+                ? (
+                    <>
+                      No projects yet.{' '}
+                      <Link to="/projects">Create a project</Link> or run{' '}
+                      <code>npm run db:seed</code> for demo data.
+                    </>
+                  )
+                : 'No open tasks in your projects.'}
+          </p>
+        ) : (
+          <div className="task-list">
+            {filteredTeamTasks.map((task) => (
+              <Link key={task.id} to={`/projects/${task.project.id}`} className="task-item">
+                <div>
+                  <h4>{task.title}</h4>
+                  <p className="task-meta">
+                    {task.project.name}
+                    {task.assignee && ` · ${task.assignee.name}`}
                     {task.dueDate && ` · Due ${formatDate(task.dueDate)}`}
                   </p>
                 </div>

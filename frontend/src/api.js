@@ -17,7 +17,11 @@ export async function api(path, options = {}) {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    const message = data.error || data.errors?.[0]?.msg || 'Request failed';
+    const message =
+      data.error ||
+      data.errors?.[0]?.msg ||
+      (Array.isArray(data.errors) && data.errors[0]?.message) ||
+      'Request failed';
     throw new Error(message);
   }
 

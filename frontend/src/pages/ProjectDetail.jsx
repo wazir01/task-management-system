@@ -98,19 +98,29 @@ export default function ProjectDetail() {
   const saveTask = async (e) => {
     e.preventDefault();
     setError('');
-    const body = {
-      title: taskForm.title,
-      description: taskForm.description,
-      status: taskForm.status,
-      priority: taskForm.priority,
-      assigneeId: taskForm.assigneeId || null,
-      dueDate: taskForm.dueDate || null,
-    };
     try {
       if (editTask) {
-        await tasksApi.update(editTask.id, body);
+        if (isAdmin) {
+          await tasksApi.update(editTask.id, {
+            title: taskForm.title,
+            description: taskForm.description,
+            status: taskForm.status,
+            priority: taskForm.priority,
+            assigneeId: taskForm.assigneeId || null,
+            dueDate: taskForm.dueDate || null,
+          });
+        } else {
+          await tasksApi.updateStatus(editTask.id, taskForm.status);
+        }
       } else {
-        await tasksApi.create(id, body);
+        await tasksApi.create(id, {
+          title: taskForm.title,
+          description: taskForm.description,
+          status: taskForm.status,
+          priority: taskForm.priority,
+          assigneeId: taskForm.assigneeId || null,
+          dueDate: taskForm.dueDate || null,
+        });
       }
       setTaskModal(false);
       loadTasks();

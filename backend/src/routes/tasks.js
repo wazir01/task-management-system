@@ -68,7 +68,7 @@ router.post(
     body('status').optional().isIn(STATUSES),
     body('priority').optional().isIn(PRIORITIES),
     body('assigneeId').optional().isString(),
-    body('dueDate').optional().isISO8601(),
+    body('dueDate').optional({ values: 'null' }).isISO8601({ strict: false }),
   ],
   validate,
   async (req, res) => {
@@ -151,7 +151,7 @@ router.put(
     body('status').optional().isIn(STATUSES),
     body('priority').optional().isIn(PRIORITIES),
     body('assigneeId').optional({ nullable: true }).isString(),
-    body('dueDate').optional({ nullable: true }).isISO8601(),
+    body('dueDate').optional({ values: 'null' }).isISO8601({ strict: false }),
   ],
   validate,
   async (req, res) => {
@@ -168,7 +168,13 @@ router.put(
     const { title, description, status, priority, assigneeId, dueDate } = req.body;
 
     if (!isAdmin) {
-      if (title !== undefined || description !== undefined || assigneeId !== undefined || priority !== undefined) {
+      const changingRestricted =
+        (title !== undefined && title !== req.task.title) ||
+        (description !== undefined && (description || null) !== (req.task.description || null)) ||
+        (assigneeId !== undefined && (assigneeId || null) !== (req.task.assigneeId || null)) ||
+        (priority !== undefined && priority !== req.task.priority);
+
+      if (changingRestricted) {
         return res.status(403).json({
           error: 'Only admins can change title, description, assignee, or priority',
         });

@@ -36,7 +36,9 @@ router.get('/', async (req, res) => {
     status: { not: 'DONE' },
   };
 
-  const [statusCounts, weeklyStatusCounts, myActiveTaskCount, totalTaskCount, myTasks, overdueTasks, recentProjects] =
+  const projectTaskWhere = { projectId: { in: projectIds } };
+
+  const [statusCounts, weeklyStatusCounts, myActiveTaskCount, totalTaskCount, myTasks, teamTasks, overdueTasks, recentProjects] =
     await Promise.all([
     prisma.task.groupBy({
       by: ['status'],
@@ -69,6 +71,18 @@ router.get('/', async (req, res) => {
       },
       orderBy: [{ dueDate: 'asc' }, { createdAt: 'desc' }],
       take: 10,
+    }),
+    prisma.task.findMany({
+      where: {
+        ...projectTaskWhere,
+        status: { not: 'DONE' },
+      },
+      include: {
+        project: { select: { id: true, name: true } },
+        assignee: { select: { id: true, name: true, email: true } },
+      },
+      orderBy: [{ dueDate: 'asc' }, { updatedAt: 'desc' }],
+      take: 15,
     }),
     prisma.task.findMany({
       where: {
@@ -121,6 +135,7 @@ router.get('/', async (req, res) => {
       weekLabel,
     },
     myTasks,
+    teamTasks,
     overdueTasks,
     recentProjects: recentProjects.map((p) => ({
       ...p,
