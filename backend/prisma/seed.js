@@ -70,7 +70,7 @@ async function main() {
     data: [
       {
         title: 'Design homepage mockups',
-        status: 'COMPLETED',
+        status: 'DONE',
         priority: 'HIGH',
         projectId: project.id,
         assigneeId: member.id,
@@ -88,7 +88,7 @@ async function main() {
       },
       {
         title: 'QA accessibility audit',
-        status: 'REVIEW',
+        status: 'IN_PROGRESS',
         priority: 'HIGH',
         description: 'WCAG 2.1 AA compliance check',
         projectId: project.id,

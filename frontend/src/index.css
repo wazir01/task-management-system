@@ -136,10 +136,35 @@ textarea {
   font-size: 1.25rem;
   letter-spacing: -0.02em;
   padding: 0 0.5rem;
+  text-decoration: none;
+  color: var(--text);
 }
 
 .logo span {
   color: var(--accent);
+}
+
+.logo-compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #fff;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.logo-compact:hover {
+  transform: translateY(-1px);
+  color: #fff;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 .nav-links {
@@ -200,64 +225,256 @@ textarea {
   color: var(--muted);
 }
 
-.theme-card {
-  margin-bottom: 1.5rem;
-}
-
-.theme-card-title {
-  font-size: 1.1rem;
-  margin: 0 0 0.25rem;
-}
-
-.theme-card-desc {
-  margin: 0 0 1rem;
-}
-
-.theme-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.75rem;
-}
-
-.theme-option {
+.page-header-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-header-actions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  padding: 0.85rem 0.65rem;
-  background: var(--surface-2);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  color: var(--text);
-  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.theme-option:hover {
-  border-color: var(--muted);
+.dashboard-hero {
+  margin-bottom: 0.75rem;
 }
 
-.theme-option-active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-}
-
-.theme-swatch {
+.dashboard-hero-top {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   width: 100%;
-  height: 28px;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid var(--border);
+  margin-bottom: 0.35rem;
 }
 
-.theme-swatch span {
-  flex: 1;
+.dashboard-hero-top .app-brand {
+  margin-bottom: 0;
 }
 
-.theme-option-label {
-  font-size: 0.85rem;
+.app-brand {
+  margin: 0 0 0.35rem;
+  font-size: clamp(3.25rem, 8vw, 5.25rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.02em;
+}
+
+.app-brand-task {
+  color: var(--text);
+}
+
+.app-brand-flow {
+  background: linear-gradient(
+    100deg,
+    var(--accent) 0%,
+    var(--accent-hover) 35%,
+    var(--success) 70%,
+    var(--accent) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: app-brand-shift 5s ease-in-out infinite;
+}
+
+@keyframes app-brand-shift {
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-brand-flow {
+    animation: none;
+    background-size: 100% auto;
+  }
+
+  .logo-compact:hover {
+    transform: none;
+  }
+}
+
+.dashboard-page-label {
+  margin: 0 0 0.15rem;
+  font-size: 1.1rem;
   font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.dashboard-page-desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+/* Theme picker — glass dock with gradient orbs */
+.theme-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 0.45rem 0.55rem 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--text) 6%, transparent) inset,
+    0 8px 32px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.theme-picker-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.theme-picker-icon {
+  font-size: 0.85rem;
+  color: var(--accent);
+  animation: theme-icon-spin 8s linear infinite;
+}
+
+@keyframes theme-icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.theme-picker-orbs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.theme-orb {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.theme-orb:hover {
+  transform: scale(1.12);
+}
+
+.theme-orb:active {
+  transform: scale(0.95);
+}
+
+.theme-orb-surface {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.theme-orb-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.25s, box-shadow 0.25s;
+  z-index: 0;
+}
+
+.theme-orb--midnight .theme-orb-surface {
+  background: linear-gradient(145deg, #0c0f14 40%, #5b8def 100%);
+}
+
+.theme-orb--light .theme-orb-surface {
+  background: linear-gradient(145deg, #ffffff 30%, #3b6fd9 100%);
+}
+
+.theme-orb--ocean .theme-orb-surface {
+  background: linear-gradient(145deg, #0a1419 35%, #2dd4bf 100%);
+}
+
+.theme-orb--forest .theme-orb-surface {
+  background: linear-gradient(145deg, #0d1210 35%, #4ade80 100%);
+}
+
+.theme-orb-active {
+  transform: scale(1.08);
+}
+
+.theme-orb-active .theme-orb-glow {
+  opacity: 1;
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3px var(--accent),
+    0 0 18px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.theme-orb-active .theme-orb-surface {
+  inset: 2px;
+}
+
+.theme-orb--midnight.theme-orb-active .theme-orb-glow {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3px #5b8def,
+    0 0 20px rgba(91, 141, 239, 0.55);
+}
+
+.theme-orb--light.theme-orb-active .theme-orb-glow {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3px #3b6fd9,
+    0 0 20px rgba(59, 111, 217, 0.45);
+}
+
+.theme-orb--ocean.theme-orb-active .theme-orb-glow {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3px #2dd4bf,
+    0 0 20px rgba(45, 212, 191, 0.5);
+}
+
+.theme-orb--forest.theme-orb-active .theme-orb-glow {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3px #4ade80,
+    0 0 20px rgba(74, 222, 128, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-picker-icon {
+    animation: none;
+  }
+
+  .theme-orb {
+    transition: none;
+  }
 }
 
 .card {
@@ -272,7 +489,7 @@ textarea {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .stat-card h3 {
@@ -650,7 +867,7 @@ textarea {
   display: grid;
   grid-template-columns: repeat(4, minmax(260px, 1fr));
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
   min-height: 420px;
   padding-bottom: 1rem;
 }
@@ -661,6 +878,8 @@ textarea {
   border-top: 3px solid var(--column-accent, var(--border));
   display: flex;
   flex-direction: column;
+  min-height: 100%;
+  height: 100%;
   max-height: calc(100vh - 280px);
   transition: box-shadow 0.2s, transform 0.2s;
 }
@@ -731,6 +950,9 @@ textarea {
   cursor: grab;
   transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
   touch-action: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 132px;
 }
 
 .kanban-card:hover {
@@ -768,6 +990,12 @@ textarea {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 2.5em;
+  flex: 1;
+}
+
+.kanban-card-desc:empty {
+  visibility: hidden;
 }
 
 .kanban-card-footer {
@@ -775,6 +1003,7 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  margin-top: auto;
 }
 
 .kanban-due {
@@ -1026,6 +1255,14 @@ textarea {
 
   .kanban-board {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-hero-top {
+    flex-wrap: wrap;
+  }
+
+  .theme-picker {
+    margin-left: auto;
   }
 
   .notification-panel {

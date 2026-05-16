@@ -1,15 +1,13 @@
 const STATUS_LABELS = {
   TODO: 'To Do',
   IN_PROGRESS: 'In Progress',
-  REVIEW: 'Review',
-  COMPLETED: 'Completed',
+  DONE: 'Done',
 };
 
 const COLORS = {
   TODO: '#6b7280',
   IN_PROGRESS: '#3b82f6',
-  REVIEW: '#eab308',
-  COMPLETED: '#22c55e',
+  DONE: '#22c55e',
 };
 
 function polarToCartesian(cx, cy, r, angleDeg) {
@@ -28,7 +26,7 @@ function describeArc(cx, cy, r, startAngle, endAngle) {
 }
 
 export default function WeeklyPieChart({ byStatus, weekLabel, total }) {
-  const segments = ['TODO', 'IN_PROGRESS', 'REVIEW', 'COMPLETED']
+  const segments = ['TODO', 'IN_PROGRESS', 'DONE']
     .map((status) => ({ status, count: byStatus[status] || 0 }))
     .filter((s) => s.count > 0);
 
@@ -71,7 +69,7 @@ export default function WeeklyPieChart({ byStatus, weekLabel, total }) {
         </text>
       </svg>
       <ul className="weekly-chart-legend">
-        {['TODO', 'IN_PROGRESS', 'REVIEW', 'COMPLETED'].map((status) => (
+        {['TODO', 'IN_PROGRESS', 'DONE'].map((status) => (
           <li key={status}>
             <span className="legend-swatch" style={{ background: COLORS[status] }} />
             <span className="legend-label">{STATUS_LABELS[status]}</span>

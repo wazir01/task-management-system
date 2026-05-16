@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { projectsApi, tasksApi } from '../api';
 import Modal from '../components/Modal';
@@ -14,6 +14,7 @@ function formatDate(d) {
 
 export default function ProjectDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -35,8 +36,11 @@ export default function ProjectDetail() {
   });
   const [memberEmail, setMemberEmail] = useState('');
   const [memberRole, setMemberRole] = useState('MEMBER');
+  const [projectModal, setProjectModal] = useState(false);
+  const [projectForm, setProjectForm] = useState({ name: '', description: '' });
 
   const isAdmin = project?.myRole === 'ADMIN';
+  const isOwner = project?.ownerId === user?.id;
   const members = project?.members || [];
 
   const loadProject = useCallback(() => {
@@ -156,6 +160,33 @@ export default function ProjectDetail() {
     }
   };
 
+  const openEditProject = () => {
+    setProjectForm({ name: project.name, description: project.description || '' });
+    setProjectModal(true);
+  };
+
+  const saveProject = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const { project: updated } = await projectsApi.update(id, projectForm);
+      setProject(updated);
+      setProjectModal(false);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const deleteProject = async () => {
+    if (!window.confirm('Delete this project and all its tasks? This cannot be undone.')) return;
+    try {
+      await projectsApi.remove(id);
+      navigate('/projects');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const boardStats = useMemo(() => {
     const counts = Object.fromEntries(COLUMNS.map((c) => [c.id, 0]));
     tasks.forEach((t) => {
@@ -170,9 +201,25 @@ export default function ProjectDetail() {
   return (
     <>
       <header className="page-header">
-        <h1>{project.name}</h1>
-        <p>{project.description || 'No description'}</p>
-        <span className={`badge badge-${project.myRole?.toLowerCase()}`}>Your role: {project.myRole}</span>
+        <div className="page-header-row">
+          <div>
+            <h1>{project.name}</h1>
+            <p>{project.description || 'No description'}</p>
+            <span className={`badge badge-${project.myRole?.toLowerCase()}`}>Your role: {project.myRole}</span>
+          </div>
+          {isAdmin && (
+            <div className="page-header-actions">
+              <button type="button" className="btn btn-ghost" onClick={openEditProject}>
+                Edit project
+              </button>
+              {isOwner && (
+                <button type="button" className="btn btn-danger" onClick={deleteProject}>
+                  Delete project
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </header>
 
       {error && <p className="error-banner">{error}</p>}
@@ -355,6 +402,41 @@ export default function ProjectDetail() {
               )}
               <button type="submit" className="btn btn-primary">
                 Save
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {projectModal && (
+        <Modal title="Edit project" onClose={() => setProjectModal(false)}>
+          <form onSubmit={saveProject}>
+            <div className="form-group">
+              <label htmlFor="edit-pname">Project name</label>
+              <input
+                id="edit-pname"
+                value={projectForm.name}
+                onChange={(e) => setProjectForm({ ...projectForm, name: e.target.value })}
+                required
+                maxLength={120}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="edit-pdesc">Description</label>
+              <textarea
+                id="edit-pdesc"
+                rows={3}
+                value={projectForm.description}
+                onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                maxLength={500}
+              />
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn btn-ghost" onClick={() => setProjectModal(false)}>
+                Cancel
+              </button>
+              <button type="submit" className="btn btn-primary">
+                Save changes
               </button>
             </div>
           </form>

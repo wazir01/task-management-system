@@ -1,19 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { dashboardApi } from '../api';
 import StatusBadge from '../components/StatusBadge';
 import WeeklyPieChart from '../components/WeeklyPieChart';
+import AppBrand from '../components/AppBrand';
 import ThemeSelector from '../components/ThemeSelector';
+import { STATUS_LABELS } from '../components/kanban/constants';
 
 function formatDate(d) {
   if (!d) return '—';
   return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function matchesTaskSearch(task, q) {
+  if (!q) return true;
+  const term = q.toLowerCase();
+  return (
+    task.title.toLowerCase().includes(term) ||
+    (task.project?.name || '').toLowerCase().includes(term)
+  );
+}
+
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [taskSearch, setTaskSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
     dashboardApi
@@ -23,24 +36,44 @@ export default function Dashboard() {
       .finally(() => setLoading(false));
   }, []);
 
+  const filteredMyTasks = useMemo(() => {
+    if (!data?.myTasks) return [];
+    return data.myTasks.filter((task) => {
+      if (statusFilter && task.status !== statusFilter) return false;
+      return matchesTaskSearch(task, taskSearch.trim());
+    });
+  }, [data, taskSearch, statusFilter]);
+
+  const filteredOverdue = useMemo(() => {
+    if (!data?.overdueTasks) return [];
+    return data.overdueTasks.filter((task) => matchesTaskSearch(task, taskSearch.trim()));
+  }, [data, taskSearch]);
+
   if (loading) return <p className="page-loading">Loading dashboard…</p>;
   if (error) return <div className="error-banner">{error}</div>;
+  if (!data) return null;
 
-  const { summary, myTasks, overdueTasks, recentProjects } = data;
+  const { summary, recentProjects } = data;
 
   return (
     <>
-      <header className="page-header">
-        <h1>Dashboard</h1>
-        <p>Overview of your projects, tasks, and deadlines</p>
+      <header className="dashboard-hero">
+        <div className="dashboard-hero-top">
+          <AppBrand />
+          <ThemeSelector />
+        </div>
+        <p className="dashboard-page-label">Dashboard</p>
+        <p className="dashboard-page-desc">Overview of your projects, tasks, and deadlines</p>
       </header>
-
-      <ThemeSelector />
 
       <section className="card-grid">
         <article className="card stat-card">
-          <h3>Projects</h3>
-          <p className="value">{summary.projectCount}</p>
+          <h3>Total tasks</h3>
+          <p className="value">{summary.totalTasks}</p>
+        </article>
+        <article className="card stat-card">
+          <h3>Completed</h3>
+          <p className="value">{summary.completedTasks}</p>
         </article>
         <article className="card stat-card">
           <h3>Active tasks</h3>
@@ -49,6 +82,10 @@ export default function Dashboard() {
         <article className="card stat-card overdue">
           <h3>Overdue</h3>
           <p className="value">{summary.overdueCount}</p>
+        </article>
+        <article className="card stat-card">
+          <h3>Projects</h3>
+          <p className="value">{summary.projectCount}</p>
         </article>
         <article className="card stat-card">
           <h3>In progress</h3>
@@ -68,11 +105,41 @@ export default function Dashboard() {
         />
       </section>
 
-      {overdueTasks.length > 0 && (
+      <section className="card task-filters" style={{ marginBottom: '1.5rem' }}>
+        <div className="filter-row">
+          <div className="form-group filter-search">
+            <label htmlFor="dashboard-search">Search tasks</label>
+            <input
+              id="dashboard-search"
+              type="search"
+              placeholder="Search by title or project…"
+              value={taskSearch}
+              onChange={(e) => setTaskSearch(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="dashboard-status">Status</label>
+            <select
+              id="dashboard-status"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">All statuses</option>
+              {Object.entries(STATUS_LABELS).map(([id, label]) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </section>
+
+      {filteredOverdue.length > 0 && (
         <section style={{ marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Overdue tasks</h2>
           <div className="task-list">
-            {overdueTasks.map((task) => (
+            {filteredOverdue.map((task) => (
               <Link key={task.id} to={`/projects/${task.project.id}`} className="task-item overdue">
                 <div>
                   <h4>{task.title}</h4>
@@ -89,11 +156,13 @@ export default function Dashboard() {
 
       <section className="card" style={{ marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.1rem', margin: '0 0 1rem' }}>My active tasks</h2>
-        {myTasks.length === 0 ? (
-          <p className="empty-state">No active tasks assigned to you</p>
+        {filteredMyTasks.length === 0 ? (
+          <p className="empty-state">
+            {taskSearch || statusFilter ? 'No tasks match your filters' : 'No active tasks assigned to you'}
+          </p>
         ) : (
           <div className="task-list">
-            {myTasks.map((task) => (
+            {filteredMyTasks.map((task) => (
               <Link key={task.id} to={`/projects/${task.project.id}`} className="task-item">
                 <div>
                   <h4>{task.title}</h4>

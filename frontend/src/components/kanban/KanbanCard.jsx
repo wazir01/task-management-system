@@ -22,7 +22,7 @@ export default function KanbanCard({ task, onClick }) {
 
   const priority = PRIORITY_STYLES[task.priority] || PRIORITY_STYLES.MEDIUM;
   const overdue =
-    task.dueDate && task.status !== 'COMPLETED' && new Date(task.dueDate) < new Date();
+    task.dueDate && task.status !== 'DONE' && new Date(task.dueDate) < new Date();
 
   return (
     <article
@@ -43,7 +43,7 @@ export default function KanbanCard({ task, onClick }) {
         <span className="kanban-status-pill">{STATUS_LABELS[task.status]}</span>
       </div>
       <h4 className="kanban-card-title">{task.title}</h4>
-      {task.description && <p className="kanban-card-desc">{task.description}</p>}
+      <p className="kanban-card-desc">{task.description || ''}</p>
       <div className="kanban-card-footer">
         {task.dueDate && (
           <span className={`kanban-due ${overdue ? 'overdue' : ''}`}>{formatDue(task.dueDate)}</span>

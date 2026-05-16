@@ -9,9 +9,9 @@ A full-stack web application for creating projects, assigning tasks, and trackin
 ## Features
 
 - **Authentication** — Sign up, log in, JWT sessions
-- **Projects & teams** — Create projects, invite members by email, assign Admin or Member roles
-- **Tasks** — Create, assign, update status, due dates; overdue highlighting
-- **Dashboard** — Project count, active tasks, status breakdown, overdue list
+- **Projects & teams** — Create, edit, and delete projects; invite members by email; assign Admin or Member roles
+- **Tasks** — Create, assign, update status (`To Do` / `In Progress` / `Done`), priorities, due dates; overdue highlighting
+- **Dashboard** — Total/completed/active/overdue counts, weekly chart, task search & status filter
 - **RBAC** — Admins manage members and all task fields; Members update assigned tasks (status) and create tasks
 
 ## Tech stack
@@ -65,9 +65,12 @@ npx prisma migrate deploy
 npm run db:seed
 cd ..
 
-# Run (two terminals)
-npm run dev:api    # http://localhost:3001
-npm run dev:web    # http://localhost:5173
+# Run (single command — API + Vite)
+npm run dev        # API http://localhost:3001 · UI http://localhost:5173
+
+# Or run separately:
+npm run dev:api
+npm run dev:web
 ```
 
 ### Demo accounts (after seed)

@@ -8,9 +8,9 @@ export default function Layout() {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="logo">
-          Task<span>Flow</span>
-        </div>
+        <NavLink to="/" end className="logo logo-compact">
+          TF
+        </NavLink>
         <nav className="nav-links">
           <NavLink to="/" end>
             Dashboard

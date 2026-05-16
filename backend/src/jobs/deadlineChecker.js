@@ -12,7 +12,7 @@ async function checkDeadlines() {
   const tasks = await prisma.task.findMany({
     where: {
       assigneeId: { not: null },
-      status: { not: 'COMPLETED' },
+      status: { not: 'DONE' },
       dueDate: { not: null },
     },
     include: {

@@ -11,7 +11,7 @@ const { validate } = require('../utils/validation');
 const { notifyTaskAssigned, notifyStatusChange } = require('../services/notifications');
 
 const router = express.Router();
-const STATUSES = ['TODO', 'IN_PROGRESS', 'REVIEW', 'COMPLETED'];
+const STATUSES = ['TODO', 'IN_PROGRESS', 'DONE'];
 const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH'];
 
 router.use(authenticate);
@@ -116,6 +116,16 @@ router.patch(
   validate,
   async (req, res) => {
     const { status } = req.body;
+    const isAdmin = req.membership.role === 'ADMIN';
+    const isAssignee = req.task.assigneeId === req.user.id;
+    const isCreator = req.task.createdById === req.user.id;
+
+    if (!isAdmin && !isAssignee && !isCreator) {
+      return res.status(403).json({
+        error: 'You can only update status on tasks you created, are assigned to, or as admin',
+      });
+    }
+
     const prevStatus = req.task.status;
 
     const task = await prisma.task.update({

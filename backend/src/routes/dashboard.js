@@ -30,7 +30,14 @@ router.get('/', async (req, res) => {
     })
   ).map((m) => m.projectId);
 
-  const [statusCounts, weeklyStatusCounts, myTasks, overdueTasks, recentProjects] = await Promise.all([
+  const activeTaskWhere = {
+    projectId: { in: projectIds },
+    assigneeId: userId,
+    status: { not: 'DONE' },
+  };
+
+  const [statusCounts, weeklyStatusCounts, myActiveTaskCount, totalTaskCount, myTasks, overdueTasks, recentProjects] =
+    await Promise.all([
     prisma.task.groupBy({
       by: ['status'],
       where: {
@@ -47,12 +54,15 @@ router.get('/', async (req, res) => {
       },
       _count: true,
     }),
-    prisma.task.findMany({
+    prisma.task.count({ where: activeTaskWhere }),
+    prisma.task.count({
       where: {
         projectId: { in: projectIds },
-        assigneeId: userId,
-        status: { not: 'COMPLETED' },
+        OR: [{ assigneeId: userId }, { createdById: userId }],
       },
+    }),
+    prisma.task.findMany({
+      where: activeTaskWhere,
       include: {
         project: { select: { id: true, name: true } },
         assignee: { select: { id: true, name: true, email: true } },
@@ -62,9 +72,7 @@ router.get('/', async (req, res) => {
     }),
     prisma.task.findMany({
       where: {
-        projectId: { in: projectIds },
-        assigneeId: userId,
-        status: { not: 'COMPLETED' },
+        ...activeTaskWhere,
         dueDate: { lt: now },
       },
       include: {
@@ -83,12 +91,12 @@ router.get('/', async (req, res) => {
     }),
   ]);
 
-  const byStatus = { TODO: 0, IN_PROGRESS: 0, REVIEW: 0, COMPLETED: 0 };
+  const byStatus = { TODO: 0, IN_PROGRESS: 0, DONE: 0 };
   statusCounts.forEach((s) => {
     byStatus[s.status] = s._count;
   });
 
-  const weeklyByStatus = { TODO: 0, IN_PROGRESS: 0, REVIEW: 0, COMPLETED: 0 };
+  const weeklyByStatus = { TODO: 0, IN_PROGRESS: 0, DONE: 0 };
   weeklyStatusCounts.forEach((s) => {
     weeklyByStatus[s.status] = s._count;
   });
@@ -99,7 +107,9 @@ router.get('/', async (req, res) => {
   res.json({
     summary: {
       projectCount: projectIds.length,
-      myActiveTasks: myTasks.length,
+      totalTasks: totalTaskCount,
+      myActiveTasks: myActiveTaskCount,
+      completedTasks: byStatus.DONE,
       overdueCount: overdueTasks.length,
       byStatus,
     },

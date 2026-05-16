@@ -11,7 +11,7 @@ export default function KanbanCardPreview({ task }) {
         <span className="kanban-status-pill">{STATUS_LABELS[task.status]}</span>
       </div>
       <h4 className="kanban-card-title">{task.title}</h4>
-      {task.description && <p className="kanban-card-desc">{task.description}</p>}
+      <p className="kanban-card-desc">{task.description || ''}</p>
       <div className="kanban-card-footer">
         <UserAvatar user={task.assignee} />
       </div>
