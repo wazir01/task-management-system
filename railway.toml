@@ -1,13 +1,18 @@
 # Railway reads this file from the repo root.
+# Required on the WEB service (Variables → Add Reference):
+#   DATABASE_URL  → PostgreSQL service
+#   JWT_SECRET    → long random string
+#   NODE_ENV      → production
 # Build: install deps + Vite frontend → backend/public, Prisma client generate
-# Start: PostgreSQL migrations, then Express (API + static SPA)
+# Deploy: migrations (preDeploy), then Express (API + static SPA)
 
 [build]
 builder = "NIXPACKS"
 buildCommand = "npm run install:all && npm run build"
 
 [deploy]
-startCommand = "npm start"
+preDeployCommand = "npm run db:migrate --prefix backend && node backend/scripts/seed-if-enabled.js"
+startCommand = "npm run start:server"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 180
 restartPolicyType = "ON_FAILURE"
