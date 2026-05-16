@@ -30,8 +30,7 @@ export default function Login() {
         <h1>Welcome back</h1>
         <p className="subtitle">Sign in to manage your projects and tasks</p>
         <p className="task-meta" style={{ marginBottom: '1rem' }}>
-          Demo: <strong>admin@demo.com</strong> / <strong>password123</strong> (run{' '}
-          <code>npm run db:seed</code> first if empty)
+          Demo: <strong>admin@demo.com</strong> / <strong>password123</strong>
         </p>
         {error && <div className="error-banner">{error}</div>}
         <form onSubmit={handleSubmit}>

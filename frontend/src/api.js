@@ -13,15 +13,33 @@ export async function api(path, options = {}) {
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  } catch {
+    throw new Error(
+      'Cannot reach the server. If this is Railway, wait for deploy to finish or check Deploy logs.'
+    );
+  }
+
+  const text = await res.text();
+  let data = {};
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(
+        res.ok ? 'Invalid server response' : `Server error (${res.status}). Check Railway deploy logs.`
+      );
+    }
+  }
 
   if (!res.ok) {
     const message =
       data.error ||
       data.errors?.[0]?.msg ||
       (Array.isArray(data.errors) && data.errors[0]?.message) ||
-      'Request failed';
+      `Request failed (${res.status})`;
     throw new Error(message);
   }
 

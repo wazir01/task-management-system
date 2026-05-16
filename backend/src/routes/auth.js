@@ -62,21 +62,24 @@ router.post(
   ],
   validate,
   async (req, res) => {
-    const { email, password } = req.body;
-
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-
     try {
+      const { email, password } = req.body;
+
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(401).json({ error: 'Invalid email or password' });
+      }
+
       const token = signToken(user.id);
       res.json({
         user: { id: user.id, email: user.email, name: user.name, createdAt: user.createdAt },
         token,
       });
     } catch (err) {
-      res.status(err.status || 500).json({ error: err.message || 'Server configuration error' });
+      console.error('Login error:', err);
+      res.status(err.status || 500).json({
+        error: err.message || 'Login failed. Check server logs.',
+      });
     }
   }
 );

@@ -49,6 +49,11 @@ app.get(/^(?!\/api).*/, (_req, res) => {
   });
 });
 
+app.use((err, _req, res, _next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: err.message || 'Internal server error' });
+});
+
 async function start() {
   const onRailway = Boolean(
     process.env.RAILWAY_ENVIRONMENT ||

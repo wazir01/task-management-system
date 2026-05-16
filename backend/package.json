@@ -4,7 +4,7 @@
   "description": "Task management REST API with RBAC",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node scripts/prepare-db.js && node src/index.js",
     "dev": "node --watch src/index.js",
     "build": "node scripts/set-db-provider.js && prisma generate",
     "postinstall": "node scripts/set-db-provider.js && prisma generate",

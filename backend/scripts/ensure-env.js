@@ -46,7 +46,7 @@ if ((onRailway || isProduction) && !process.env.JWT_SECRET) {
   );
 }
 
-if (onRailway || isProduction) {
+if (onRailway) {
   if (!url.startsWith('postgres://') && !url.startsWith('postgresql://')) {
     fail('DATABASE_URL must be a PostgreSQL URL on Railway.', [
       'Use Add Reference → PostgreSQL → DATABASE_URL on the web service.',
