@@ -9,6 +9,7 @@ const projectRoutes = require('./routes/projects');
 const taskRoutes = require('./routes/tasks');
 const dashboardRoutes = require('./routes/dashboard');
 const notificationRoutes = require('./routes/notifications');
+const memberRoutes = require('./routes/members');
 const { startDeadlineChecker } = require('./jobs/deadlineChecker');
 
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/members', memberRoutes);
 
 const publicDir = path.join(__dirname, '..', 'public');
 app.use(express.static(publicDir));

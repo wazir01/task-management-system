@@ -22,17 +22,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const { user, token } = await authApi.login({ email, password });
+    const { token } = await authApi.login({ email, password });
     localStorage.setItem('token', token);
-    setUser(user);
-    return user;
+    const { user: fresh } = await authApi.me();
+    setUser(fresh);
+    return fresh;
   };
 
   const signup = async (name, email, password) => {
-    const { user, token } = await authApi.signup({ name, email, password });
+    const { token } = await authApi.signup({ name, email, password });
     localStorage.setItem('token', token);
-    setUser(user);
-    return user;
+    const { user: fresh } = await authApi.me();
+    setUser(fresh);
+    return fresh;
   };
 
   const logout = () => {

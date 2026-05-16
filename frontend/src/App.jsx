@@ -6,6 +6,7 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
+import Members from './pages/Members';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -18,6 +19,13 @@ function PublicOnly({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="page-loading">Loading…</div>;
   if (user) return <Navigate to="/" replace />;
+  return children;
+}
+
+function AdminOnly({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="page-loading">Loading…</div>;
+  if (!user?.isAdminAnywhere) return <Navigate to="/" replace />;
   return children;
 }
 
@@ -50,6 +58,14 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="projects" element={<Projects />} />
         <Route path="projects/:id" element={<ProjectDetail />} />
+        <Route
+          path="members"
+          element={
+            <AdminOnly>
+              <Members />
+            </AdminOnly>
+          }
+        />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

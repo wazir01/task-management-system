@@ -28,9 +28,9 @@ async function deliverNotification(userId, { type, title, message, taskId, proje
   if (settings.emailReminders && user?.email) {
     const sent = await sendEmail({
       to: user.email,
-      subject: `[TaskFlow] ${title}`,
+      subject: `[TaskNest] ${title}`,
       text: message,
-      html: `<p>${message}</p><p><small>TaskFlow notification</small></p>`,
+      html: `<p>${message}</p><p><small>TaskNest notification</small></p>`,
     });
     if (sent) {
       await prisma.notification.update({

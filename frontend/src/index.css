@@ -271,7 +271,7 @@ textarea {
   color: var(--text);
 }
 
-.app-brand-flow {
+.app-brand-nest {
   background: linear-gradient(
     100deg,
     var(--accent) 0%,
@@ -297,7 +297,7 @@ textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-brand-flow {
+  .app-brand-nest {
     animation: none;
     background-size: 100% auto;
   }
@@ -1271,3 +1271,107 @@ textarea {
     width: auto;
   }
 }
+
+.members-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1rem;
+}
+
+.member-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.member-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.member-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 0.95rem;
+}
+
+.member-identity {
+  min-width: 0;
+}
+
+.member-identity h3 {
+  margin: 0;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-identity .task-meta {
+  margin: 0.15rem 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 0.1rem;
+  font-size: 0.78rem;
+}
+
+.member-projects {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.85rem;
+}
+
+.member-project-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.member-project-name {
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.member-project-name:hover {
+  color: var(--accent);
+}
+
+.member-empty {
+  margin: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+

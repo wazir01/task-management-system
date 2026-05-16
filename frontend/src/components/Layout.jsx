@@ -9,13 +9,14 @@ export default function Layout() {
     <div className="app-shell">
       <aside className="sidebar">
         <NavLink to="/" end className="logo logo-compact">
-          TF
+          TN
         </NavLink>
         <nav className="nav-links">
           <NavLink to="/" end>
             Dashboard
           </NavLink>
           <NavLink to="/projects">Projects</NavLink>
+          {user?.isAdminAnywhere && <NavLink to="/members">Members</NavLink>}
         </nav>
         <NotificationBell />
         <div className="user-block">

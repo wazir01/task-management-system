@@ -97,3 +97,7 @@ export const notificationsApi = {
 export const dashboardApi = {
   get: () => api('/dashboard'),
 };
+
+export const membersApi = {
+  list: () => api('/members'),
+};

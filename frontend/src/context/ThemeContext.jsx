@@ -7,14 +7,15 @@ export const THEMES = [
   { id: 'forest', label: 'Forest', swatch: ['#0d1210', '#4ade80'] },
 ];
 
-const STORAGE_KEY = 'taskflow-theme';
+const STORAGE_KEY = 'tasknest-theme';
+const LEGACY_STORAGE_KEY = 'taskflow-theme';
 const DEFAULT_THEME = 'midnight';
 
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
     return THEMES.some((t) => t.id === stored) ? stored : DEFAULT_THEME;
   });
 

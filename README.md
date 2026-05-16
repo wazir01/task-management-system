@@ -1,4 +1,4 @@
-# TaskFlow — Task Management System
+# TaskNest — Task Management System
 
 A full-stack web application for creating projects, assigning tasks, and tracking progress with **role-based access control** (Admin / Member).
 
@@ -87,7 +87,7 @@ npm run dev:web
 
 ```bash
 git add -A
-git commit -m "Initial commit: TaskFlow full-stack app"
+git commit -m "Initial commit: TaskNest full-stack app"
 git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/task-management-system.git
 git push -u origin main
@@ -133,7 +133,7 @@ Replace `YOUR_USERNAME` and the repo name with yours.
 
 1. On the web service, open **Settings** → **Networking**.
 2. Click **Generate Domain**.
-3. Open the URL (e.g. `https://your-app.up.railway.app`) — you should see the TaskFlow login page.
+3. Open the URL (e.g. `https://your-app.up.railway.app`) — you should see the TaskNest login page.
 
 ### Step 5 — Seed demo users (optional)
 

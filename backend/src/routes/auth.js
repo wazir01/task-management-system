@@ -84,8 +84,12 @@ router.post(
   }
 );
 
-router.get('/me', authenticate, (req, res) => {
-  res.json({ user: req.user });
+router.get('/me', authenticate, async (req, res) => {
+  const adminMembership = await prisma.projectMember.findFirst({
+    where: { userId: req.user.id, role: 'ADMIN' },
+    select: { id: true },
+  });
+  res.json({ user: { ...req.user, isAdminAnywhere: Boolean(adminMembership) } });
 });
 
 module.exports = router;

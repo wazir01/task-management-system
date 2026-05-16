@@ -1,5 +1,5 @@
 self.addEventListener('push', (event) => {
-  let data = { title: 'TaskFlow', body: 'You have a new notification' };
+  let data = { title: 'TaskNest', body: 'You have a new notification' };
   try {
     if (event.data) data = event.data.json();
   } catch {

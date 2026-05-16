@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TaskFlow — Project & Task Management</title>
+    <title>TaskNest — Project & Task Management</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,7 +14,7 @@
   <body>
     <script>
       (function () {
-        var t = localStorage.getItem('taskflow-theme');
+        var t = localStorage.getItem('tasknest-theme') || localStorage.getItem('taskflow-theme');
         if (t) document.documentElement.setAttribute('data-theme', t);
       })();
     </script>

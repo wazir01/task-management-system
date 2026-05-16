@@ -219,7 +219,7 @@ async function main() {
     {
       key: 'mobile',
       name: 'Mobile App Launch',
-      description: 'iOS and Android release for TaskFlow companion app',
+      description: 'iOS and Android release for TaskNest companion app',
       ownerEmail: 'admin@demo.com',
       members: [
         { email: 'admin@demo.com', role: 'ADMIN' },

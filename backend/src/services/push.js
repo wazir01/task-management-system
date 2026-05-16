@@ -9,7 +9,7 @@ function configurePush() {
   const priv = process.env.VAPID_PRIVATE_KEY;
   if (!pub || !priv) return false;
   webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || 'mailto:admin@taskflow.local',
+    process.env.VAPID_SUBJECT || 'mailto:admin@tasknest.local',
     pub,
     priv
   );
