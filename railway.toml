@@ -1,3 +1,7 @@
+# Railway reads this file from the repo root.
+# Build: install deps + Vite frontend → backend/public, Prisma client generate
+# Start: PostgreSQL migrations, then Express (API + static SPA)
+
 [build]
 builder = "NIXPACKS"
 buildCommand = "npm run install:all && npm run build"
@@ -5,5 +9,5 @@ buildCommand = "npm run install:all && npm run build"
 [deploy]
 startCommand = "npm start"
 healthcheckPath = "/api/health"
-healthcheckTimeout = 120
+healthcheckTimeout = 180
 restartPolicyType = "ON_FAILURE"

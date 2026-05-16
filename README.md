@@ -94,21 +94,76 @@ Replace `YOUR_USERNAME` and the repo name with yours.
 
 ## Deploy on Railway
 
-1. Sign in at [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo** → select your repo.
-2. In the project, click **+ New** → **Database** → **PostgreSQL**.
-3. Open your **web service** (the repo deploy) → **Variables** → **Add Reference** → link `DATABASE_URL` from the PostgreSQL service.
-4. Add these variables on the web service:
+### Prerequisites
 
-| Variable     | Value                                      |
-| ------------ | ------------------------------------------ |
-| `JWT_SECRET` | Long random string (32+ chars)             |
-| `NODE_ENV`   | `production`                               |
+- Code pushed to a **GitHub** repository (see [Push to GitHub](#push-to-github) above).
+- A [Railway](https://railway.app) account (GitHub login works).
 
-5. **Settings** → ensure the service root is the repo root (where `railway.toml` lives). Railway builds with `npm run install:all && npm run build` and starts with `npm start` (migrations + API + static frontend).
-6. **Settings** → **Networking** → **Generate Domain** for your public URL.
-7. Optional demo data: open the service → **Shell** and run `npm run db:seed`.
+### Step 1 — Create the project
 
-`railway.toml` health check: `GET /api/health`
+1. Go to [railway.app/new](https://railway.app/new).
+2. Choose **Deploy from GitHub repo** and authorize Railway if prompted.
+3. Select your `task-management-system` repository.
+4. Railway creates a **web service** from the repo root (where `railway.toml` and `package.json` live).
+
+### Step 2 — Add PostgreSQL
+
+1. In the same Railway project, click **+ New** → **Database** → **PostgreSQL**.
+2. Wait until the database shows as **Active**.
+
+### Step 3 — Connect the database to the app
+
+1. Open your **web service** (not the Postgres service).
+2. Go to **Variables**.
+3. Click **+ New Variable** → **Add Reference**.
+4. Select the PostgreSQL service and choose **`DATABASE_URL`**.
+5. Add these variables manually:
+
+| Variable       | Value |
+| -------------- | ----- |
+| `JWT_SECRET`   | A long random secret (e.g. 32+ characters). Generate one and keep it private. |
+| `NODE_ENV`     | `production` |
+
+6. Click **Deploy** (or wait for an automatic redeploy) so the app picks up the new variables.
+
+### Step 4 — Public URL
+
+1. On the web service, open **Settings** → **Networking**.
+2. Click **Generate Domain**.
+3. Open the URL (e.g. `https://your-app.up.railway.app`) — you should see the TaskFlow login page.
+
+### Step 5 — Seed demo users (optional)
+
+1. On the web service, open the **Shell** tab.
+2. Run:
+
+```bash
+npm run db:seed
+```
+
+3. Sign in with `admin@demo.com` / `password123`.
+
+### How the deploy works
+
+| Phase | What runs |
+| ----- | --------- |
+| **Build** | `npm run install:all` → `npm run build` (React → `backend/public`, Prisma client) |
+| **Start** | `npm start` → `prisma migrate deploy` → Express on `PORT` (serves API + SPA) |
+| **Health** | Railway checks `GET /api/health` |
+
+### Troubleshooting
+
+| Problem | Fix |
+| ------- | --- |
+| Build fails on Prisma | Ensure `DATABASE_URL` is linked to the web service (reference from Postgres). Redeploy. |
+| App crashes on start / “migrate” errors | Postgres must be running; `DATABASE_URL` must be on the **web** service, not only on the DB service. |
+| Login works locally but not on Railway | Run `npm run db:seed` in the Railway shell, or sign up a new user on the live site. |
+| Blank page | Check deploy logs; confirm the build step completed and `backend/public` was created during build. |
+| Health check timeout | Open **Deploy Logs**; first boot runs DB migrations and can take 1–2 minutes. |
+
+### After deploy
+
+Add your live URL under **Live demo** at the top of this README.
 
 ## Project structure
 
