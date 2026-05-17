@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { dashboardApi } from '../api';
 import StatusBadge from '../components/StatusBadge';
 import WeeklyPieChart from '../components/WeeklyPieChart';
@@ -27,6 +27,16 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [taskSearch, setTaskSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const navigate = useNavigate();
+  const tasksSectionRef = useRef(null);
+  const overdueSectionRef = useRef(null);
+
+  const focusTasks = (status, ref = tasksSectionRef) => {
+    setStatusFilter(status);
+    requestAnimationFrame(() => {
+      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
 
   useEffect(() => {
     dashboardApi
@@ -75,30 +85,60 @@ export default function Dashboard() {
       </header>
 
       <section className="card-grid">
-        <article className="card stat-card">
+        <button
+          type="button"
+          className="card stat-card stat-card-clickable"
+          onClick={() => focusTasks('')}
+          aria-label="Show all tasks"
+        >
           <h3>Total tasks</h3>
           <p className="value">{summary.totalTasks}</p>
-        </article>
-        <article className="card stat-card">
+        </button>
+        <button
+          type="button"
+          className="card stat-card stat-card-clickable"
+          onClick={() => focusTasks('DONE')}
+          aria-label="Show completed tasks"
+        >
           <h3>Completed</h3>
           <p className="value">{summary.completedTasks}</p>
-        </article>
-        <article className="card stat-card">
+        </button>
+        <button
+          type="button"
+          className="card stat-card stat-card-clickable"
+          onClick={() => focusTasks('')}
+          aria-label="Show active tasks"
+        >
           <h3>Active tasks</h3>
           <p className="value">{summary.myActiveTasks}</p>
-        </article>
-        <article className="card stat-card overdue">
+        </button>
+        <button
+          type="button"
+          className="card stat-card stat-card-clickable overdue"
+          onClick={() => focusTasks('', overdueSectionRef)}
+          aria-label="Show overdue tasks"
+        >
           <h3>Overdue</h3>
           <p className="value">{summary.overdueCount}</p>
-        </article>
-        <article className="card stat-card">
+        </button>
+        <button
+          type="button"
+          className="card stat-card stat-card-clickable"
+          onClick={() => navigate('/projects')}
+          aria-label="Go to projects"
+        >
           <h3>Projects</h3>
           <p className="value">{summary.projectCount}</p>
-        </article>
-        <article className="card stat-card">
+        </button>
+        <button
+          type="button"
+          className="card stat-card stat-card-clickable"
+          onClick={() => focusTasks('IN_PROGRESS')}
+          aria-label="Show in-progress tasks"
+        >
           <h3>In progress</h3>
           <p className="value">{summary.byStatus.IN_PROGRESS}</p>
-        </article>
+        </button>
       </section>
 
       <section className="card weekly-chart-card" style={{ marginBottom: '1.5rem' }}>
@@ -113,7 +153,7 @@ export default function Dashboard() {
         />
       </section>
 
-      <section className="card task-filters" style={{ marginBottom: '1.5rem' }}>
+      <section ref={tasksSectionRef} className="card task-filters" style={{ marginBottom: '1.5rem', scrollMarginTop: '1rem' }}>
         <div className="filter-row">
           <div className="form-group filter-search">
             <label htmlFor="dashboard-search">Search tasks</label>
@@ -144,7 +184,7 @@ export default function Dashboard() {
       </section>
 
       {filteredOverdue.length > 0 && (
-        <section style={{ marginBottom: '1.5rem' }}>
+        <section ref={overdueSectionRef} style={{ marginBottom: '1.5rem', scrollMarginTop: '1rem' }}>
           <h2 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Overdue tasks</h2>
           <div className="task-list">
             {filteredOverdue.map((task) => (
